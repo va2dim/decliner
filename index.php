@@ -1,69 +1,55 @@
 <?php
 
-
-/**
- * @param $amount - кол-во эл-тов в категории
- * @param $nominative - название категории в именительном падеже ед./мн.ч.
- * @param $genetive - название категории в родительском падеже ед.ч.
- * @param $plural_genetive - название категории в родительском падеже мн.ч.
- * @return string
- *
- */
-function translate($amount, $nominative = '', $genetive = '', $plural_genetive = '')
+function translate(int $amount, $words)
 {
 
-    $nd = strlen((string) $amount);
-    $divModuleEnding = $amount % (10**($nd-1));
+    while (!is_null($key = key($words))) {
 
-    if (((1 == $divModuleEnding) || (1 == $amount)) && (!((11 == $amount) || (11 == $divModuleEnding)))) {
-        $word = $nominative;
-    } else {
-        if ((in_array($amount, range(2, 4)) || in_array($divModuleEnding,
-              range(2, 4)))
-          && (!(in_array($amount, range(11, 19)) || (in_array($divModuleEnding,
-              range(11, 19)))))
-        ) {
-            if (!empty($genetive)) {
-                $word = $genetive;
-            } else {
-                $word = $plural_genetive;
+        if($amount == $key) {
+            break;
+        } elseif ($amount < $key) {
+            if (prev($words) === false ) {
+                end($words);
             }
+            break;
         } else {
-            $word = $plural_genetive;
-        }
+                if (next($words) === false ) {
+                    end($words);
+                    break;
+                }
+            }
     }
+
+    $word = current($words);
 
     return $amount.' '.$word;
 }
 
+assert('0 детей' == translate(0, [1 => 'ребёнок',2 => 'ребёнка',5 => 'детей']));
+assert('1 ребёнок' == translate(1, [1 => 'ребёнок',2 => 'ребёнка',5 => 'детей']));
+assert('3 ребёнка' == translate(3, [1 => 'ребёнок',2 => 'ребёнка',5 => 'детей']));
+assert('7 детей' == translate(7, [1 => 'ребёнок',2 => 'ребёнка',5 => 'детей']));
 
-$category['ru'][] = ['ребенок', 'ребенка', 'детей'];
-$category['ru'][] = ['очки', '', 'очков'];
-$category['en'][] = ['child', '', 'children'];
-$category['en'][] = ['glasses','','glasses'];
-
-$category['es'][] = ['niño', '', 'niños'];
-$category['es'][] = ['espectáculos', '', 'espectáculos'];
+assert('1 child' == translate(1, [1 => 'child',2 => 'children']));
+assert('9 children' == translate(9, [1 => 'child',2 => 'children']));
 
 
-for ($i=1;$i<103;$i++) {
-    echo "\n".translate($i, $category['ru'][0][0],$category['ru'][0][1],$category['ru'][0][2]);
-}
-for ($i=1;$i<10;$i++) {
-    echo "\n".translate($i, $category['ru'][1][0],$category['ru'][1][1],$category['ru'][1][2]);
-}
+assert('1 glasses' == translate(1, [1 => 'glasses']));
+assert('3 glasses' == translate(3, [1 => 'glasses']));
 
-for ($i=1;$i<10;$i++) {
-    echo "\n".translate($i, $category['en'][0][0], $category['en'][0][1], $category['en'][0][2]);
-}
-for ($i=1;$i<10;$i++) {
-    echo "\n".translate($i, $category['en'][1][0], $category['en'][1][1], $category['en'][1][2]);
-}
+assert('1 очки' == translate(1, [1 => 'очки',2 => 'очков']));
+assert('2 очков' == translate(2, [1 => 'очки',2 => 'очков']));
+assert('7 очков' == translate(7, [1 => 'очки',2 => 'очков']));
 
-for ($i=1;$i<10;$i++) {
-    echo "\n".translate( $i, $category['es'][0][0],$category['es'][0][1], $category['es'][0][2]);
-}
-for ($i=1;$i<10;$i++) {
-    echo "\n".translate($i, $category['es'][1][0],$category['es'][1][1], $category['es'][1][2]);
-}
+assert('1 квїжік' ==  translate(1, [1 => 'квїжік',3 => 'квїжіт',6 => 'квїжім', 9 => 'квїжіф']));
+assert('5 квїжіт' ==  translate(5, [1 => 'квїжік',3 => 'квїжіт',6 => 'квїжім', 9 => 'квїжіф']));
+assert('7 квїжім' ==  translate(7, [1 => 'квїжік',3 => 'квїжіт',6 => 'квїжім', 9 => 'квїжіф']));
+assert('10 квїжіф' ==  translate(10, [1 => 'квїжік',3 => 'квїжіт',6 => 'квїжім', 9 => 'квїжіф']));
+
+
+
+
+
+
+
 
