@@ -3,21 +3,31 @@
 function translate(int $amount, $words)
 {
 
+    if (isSet($words[$amount])){
+        return $amount.' '.$words[$amount];
+    }
+
+    $count = count($words);
+    $i=1;
+
     while (!is_null($key = key($words))) {
 
-        if($amount == $key) {
-            break;
-        } elseif ($amount < $key) {
-            if (prev($words) === false ) {
+        if ($amount < $key) {
+            if ($i != 1) {
+                prev($words);
+            } else {
                 end($words);
             }
             break;
         } else {
-                if (next($words) === false ) {
-                    end($words);
-                    break;
-                }
+            if ($i == $count) {
+                break;
+            } else {
+                next($words);
             }
+        }
+
+        $i++;
     }
 
     $word = current($words);
@@ -25,10 +35,13 @@ function translate(int $amount, $words)
     return $amount.' '.$word;
 }
 
-assert('0 детей' == translate(0, [1 => 'ребёнок',2 => 'ребёнка',5 => 'детей']));
+
 assert('1 ребёнок' == translate(1, [1 => 'ребёнок',2 => 'ребёнка',5 => 'детей']));
 assert('3 ребёнка' == translate(3, [1 => 'ребёнок',2 => 'ребёнка',5 => 'детей']));
 assert('7 детей' == translate(7, [1 => 'ребёнок',2 => 'ребёнка',5 => 'детей']));
+
+assert('0 детей' == translate(0, [1 => 'ребёнок',2 => 'ребёнка',5 => 'детей']));
+
 
 assert('1 child' == translate(1, [1 => 'child',2 => 'children']));
 assert('9 children' == translate(9, [1 => 'child',2 => 'children']));
@@ -45,8 +58,6 @@ assert('1 квїжік' ==  translate(1, [1 => 'квїжік',3 => 'квїжіт
 assert('5 квїжіт' ==  translate(5, [1 => 'квїжік',3 => 'квїжіт',6 => 'квїжім', 9 => 'квїжіф']));
 assert('7 квїжім' ==  translate(7, [1 => 'квїжік',3 => 'квїжіт',6 => 'квїжім', 9 => 'квїжіф']));
 assert('10 квїжіф' ==  translate(10, [1 => 'квїжік',3 => 'квїжіт',6 => 'квїжім', 9 => 'квїжіф']));
-
-
 
 
 
